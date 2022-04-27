@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const userRoutes = require("./routes/user");
 
 mongoose
-  .connect("mongodb+srv://Candipy:5277123@cluster0.md9ll.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect("mongodb+srv://Candipy:SsQHgzjFvxb4S9op@cluster0.md9ll.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
@@ -38,5 +38,6 @@ app.use(express.json());
 //   next();
 // });
 
+app.use("/images", express.static(path.join(__dirname), "images"));
 app.use("/api/auth", userRoutes);
 module.exports = app;
