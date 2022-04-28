@@ -1,5 +1,28 @@
 const Sauce = require("../models/sauces");
 
+const fs = require("fs"); // package permettant de modifier le système de fichiers
+
+// Suppression d'une sauce = DELETE
+
+exports.deleteSauce = (req, res, next) => {
+  Sauce.findOne({ _id: req.params.id }) // Cherche l'objet dans la bdd
+    .then((sauce) => {
+      // Extraire le nom du fichier à supprimer
+      const filename = sauce.imageUrl.split("/images/")[1]; // On sait qu'on a l'URL du fichier retrouné par la base, cette image aura une partie ('/images/'),
+      //plit (divise) en 2 tableaux, ce qui vient avant et ce qui vient après, ce qui vient après [index1] est le nom du fichier
+      fs.unlink(
+        `images/${filename}`, //unlink = supprimmer un fichier, argument 1 chemin du fichier,
+        () => {
+          //2ème callback = ce qu'il faut faire une fois le fichier supprimé, soit supprimer la sauce
+          Sauce.deleteOne({ _id: req.params.id })
+            .then(() => res.status(200).json({ message: "Objet supprimé!" }))
+            .catch((error) => res.status(400).json({ error }));
+        }
+      );
+    })
+    .catch((error) => res.status(500).json({ error }));
+};
+
 // Modification d'une sauce = PUT
 
 exports.modifySauce = (req, res, next) => {
@@ -13,14 +36,14 @@ exports.modifySauce = (req, res, next) => {
     : { ...req.body }; // Si il n'existe pas, copie du corps de la requete
   Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id }) // modification de l'identifiant de l'objet créé
     .then(() => res.status(200).json({ message: "Objet modifié" }))
-    .catch(() => res.status(400).json({ error }));
+    .catch(() => res.status(403).json({ error }));
 };
 
 // Création d'une sauce = POST
 
 exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce); // Extraire l'objet en Json ddu corps de la requete = objet utilisable
-  delete sauceObject._id;
+
   // Création nouvelle sauce
   const sauce = new Sauce({
     ...sauceObject, // Spread = copie de tous les éléments de req.body
