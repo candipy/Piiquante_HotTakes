@@ -7,18 +7,25 @@ const fs = require("fs"); // package permettant de modifier le système de fichi
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id }) // Cherche l'objet dans la bdd
     .then((sauce) => {
-      // Extraire le nom du fichier à supprimer
-      const filename = sauce.imageUrl.split("/images/")[1]; // On sait qu'on a l'URL du fichier retrouné par la base, cette image aura une partie ('/images/'),
-      //plit (divise) en 2 tableaux, ce qui vient avant et ce qui vient après, ce qui vient après [index1] est le nom du fichier
-      fs.unlink(
-        `images/${filename}`, //unlink = supprimmer un fichier, argument 1 chemin du fichier,
-        () => {
-          //2ème callback = ce qu'il faut faire une fois le fichier supprimé, soit supprimer la sauce
-          Sauce.deleteOne({ _id: req.params.id })
-            .then(() => res.status(200).json({ message: "Objet supprimé!" }))
-            .catch((error) => res.status(400).json({ error }));
-        }
-      );
+      if (!sauce) {
+        return res.status(404).json({ error: new error("Objet non trouvé") });
+      }
+      if (sauce.userId !== req.auth.userId) {
+        res.status(403).json({ error: new Error("Requete non authorisée") });
+      } else {
+        // Extraire le nom du fichier à supprimer
+        const filename = sauce.imageUrl.split("/images/")[1]; // On sait qu'on a l'URL du fichier retrouné par la base, cette image aura une partie ('/images/'),
+        //plit (divise) en 2 tableaux, ce qui vient avant et ce qui vient après, ce qui vient après [index1] est le nom du fichier
+        fs.unlink(
+          `images/${filename}`, //unlink = supprimmer un fichier, argument 1 chemin du fichier,
+          () => {
+            //2ème callback = ce qu'il faut faire une fois le fichier supprimé, soit supprimer la sauce
+            Sauce.deleteOne({ _id: req.params.id })
+              .then(() => res.status(200).json({ message: "Objet supprimé!" }))
+              .catch((error) => res.status(400).json({ error }));
+          }
+        );
+      }
     })
     .catch((error) => res.status(500).json({ error }));
 };
@@ -26,17 +33,29 @@ exports.deleteSauce = (req, res, next) => {
 // Modification d'une sauce = PUT
 
 exports.modifySauce = (req, res, next) => {
-  // Création d'un objet sauceObject qui regarde si req.file existe ou non
-  const sauceObject = req.file
-    ? {
-        // Si il existe
-        ...JSON.parse(req.body.sauce), // Récupérer les infos de l'objet qui sont dans cette partie de la requete
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`, // Modifier l'image URL
+  Sauce.findOne({ _id: req.params.id })
+    .then((sauce) => {
+      if (!sauce) {
+        res.status(404).json({ error: new Error("Objet non trouvé") });
       }
-    : { ...req.body }; // Si il n'existe pas, copie du corps de la requete
-  Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id }) // modification de l'identifiant de l'objet créé
-    .then(() => res.status(200).json({ message: "Objet modifié" }))
-    .catch(() => res.status(403).json({ error }));
+      if (sauce.userId !== req.auth.userId) {
+        // compare Userid de la bdb avec userId de la requete d'authentification
+        res.status(403).json({ error: new Error("Requete non authorisée") });
+      } else {
+        // Création d'un objet sauceObject qui regarde si req.file existe ou non
+        const sauceObject = req.file
+          ? {
+              // Si il existe
+              ...JSON.parse(req.body.sauce), // Récupérer les infos de l'objet qui sont dans cette partie de la requete
+              imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`, // Modifier l'image URL
+            }
+          : { ...req.body }; // Si il n'existe pas, copie du corps de la requete
+        Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id }) // modification de l'identifiant de l'objet créé
+          .then(() => res.status(200).json({ message: "Objet modifié" }))
+          .catch((error) => res.status(400).json({ error }));
+      }
+    })
+    .catch((error) => res.status(500).json({ error }));
 };
 
 // Création d'une sauce = POST
