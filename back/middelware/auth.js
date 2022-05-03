@@ -8,10 +8,10 @@ module.exports = (req, res, next) => {
     const decodedToken = jwt.verify(token, "RANDOM_TOKEN_SECRET"); // Décoder le token
     const userId = decodedToken.userId; // Extrait de l'id utilsateur du token
     req.auth = { userId }; // Ajoute un objet auth à l'objet de requête qui contient le userId  extrait du token
-    console.log("hey", userId);
+
     if (req.body.userId && req.body.userId !== userId) {
       // Si l'ID saisi dans la demande est différente de celui extrait du token = erreur
-      throw "User Id Invalide";
+      res.status(403).json({ message: "Utilisateur non authorisé" });
     } else {
       next(); // Sinon, requete suivant
     }

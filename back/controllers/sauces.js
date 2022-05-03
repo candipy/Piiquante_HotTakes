@@ -1,6 +1,63 @@
 const Sauce = require("../models/sauces");
 
 const fs = require("fs"); // package permettant de modifier le système de fichiers
+const sauces = require("../models/sauces");
+
+// gestion des Likes
+
+exports.likesSauces = (req, res) => {
+  Sauce.findOne({ _id: req.params.id })
+    .then((sauce) => {
+      console.log("Contenu résultat promise : sauce", sauce);
+      console.log("req.body", req.body);
+      if (!sauce.usersLiked.includes(req.body.userId) && req.body.like === 1) {
+        // UserId de la requete n'est pas dans userLiked de la bdd et la req renvoi 1 like
+        Sauce.updateOne(
+          //Chercher l'objet dans la bdd
+          { _id: req.params.id },
+          // Mettre à jour la bdd
+          { $inc: { likes: 1 }, $push: { usersLiked: req.body.userId } }
+        )
+          .then(() => res.status(201).json({ message: "Tu aimes cette sauce :) +1 !" }))
+
+          .catch((error) => res.status(401).json({ error }));
+      } else if (sauce.usersLiked.includes(req.body.userId) && req.body.like === 0) {
+        // UserId de la requete est pas dans userLiked (il a déjà aimé) de la bdd et la req renvoi 0 like, il est neutre
+        Sauce.updateOne(
+          //Chercher l'objet dans la bdd
+          { _id: req.params.id },
+          // Mettre à jour la bdd
+          { $inc: { likes: -1 }, $pull: { usersLiked: req.body.userId } }
+        )
+          .then(() => res.status(201).json({ message: "Tu aimais cette sauce, tu ne donnes plus ton avis sur cette sauce" }))
+
+          .catch((error) => res.status(401).json({ error }));
+      } else if (!sauce.usersDisliked.includes(req.body.userId) && req.body.like === -1) {
+        // UserId de la requete n'est pas dans userDisliked  de la bdd et la req renvoi -1 , il n'aime pas
+        Sauce.updateOne(
+          //Chercher l'objet dans la bdd
+          { _id: req.params.id },
+          // Mettre à jour la bdd
+          { $inc: { dislikes: 1 }, $push: { usersDisliked: req.body.userId } }
+        )
+          .then(() => res.status(201).json({ message: "Tu n'aimes pas cette sauce :(" }))
+
+          .catch((error) => res.status(401).json({ error }));
+      } else if (sauce.usersDisliked.includes(req.body.userId) && req.body.like === 0) {
+        // UserId de la requete est dans userDisliked (il a déjà pas aimé) de la bdd et la req renvoi 0 dislike, il est neutre
+        Sauce.updateOne(
+          //Chercher l'objet dans la bdd
+          { _id: req.params.id },
+          // Mettre à jour la bdd
+          { $inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId } }
+        )
+          .then(() => res.status(201).json({ message: "Tu n'aimais pas cette sauce, tu ne donnes plus ton avis sur cette sauce" }))
+
+          .catch((error) => res.status(401).json({ error }));
+      }
+    })
+    .catch((error) => res.status(404).json({ error }));
+};
 
 // Suppression d'une sauce = DELETE
 
@@ -69,8 +126,8 @@ exports.createSauce = (req, res, next) => {
     imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`, // Résoudre URL de l'image : req.protocol = http/https, req.get('host') = URL du lien, req.filename = nom du fichier
     likes: 0, // Initilisation des données
     dislikes: 0,
-    userLiked: 0,
-    userDisliked: 0,
+    usersLiked: [""],
+    usersDisliked: [""],
   });
   sauce
     .save() // Enregistrer dans la base MongoDB
