@@ -22,26 +22,6 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
-// app.use((req, res, next) => {
-//   console.log("Requête reçue !");
-//   next();
-// });
-
-// app.use((req, res, next) => {
-//   res.status(200);
-//   next();
-// });
-
-// app.use((req, res, next) => {
-//   res.json({ message: "Votre requête a bien été reçue !" });
-//   next();
-// });
-
-// app.use((req, res, next) => {
-//   console.log("Réponse envoyée avec succès !");
-//   next();
-// });
-
 app.use("/images", express.static(path.join(__dirname, "images"))); // Authorise l'accès de amnière statique au dossier images
 app.use("/api/sauces", saucesRoutes);
 app.use("/api/auth", userRoutes);
