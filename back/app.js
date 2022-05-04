@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 const dotenv = require("dotenv");
 const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 
 dotenv.config();
 
@@ -36,5 +37,6 @@ app.use("/images", express.static(path.join(__dirname, "images"))); // Authorise
 app.use("/api/sauces", saucesRoutes);
 app.use("/api/auth", userRoutes);
 app.use(limiter);
+app.use(helmet());
 
 module.exports = app; // Permets d'utiliser les modules sur les autres fichiers
