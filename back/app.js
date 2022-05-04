@@ -1,14 +1,24 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const dotenv = require("dotenv");
+const rateLimit = require("express-rate-limit");
+
+dotenv.config();
 
 const app = express();
 
 const userRoutes = require("./routes/user");
 const saucesRoutes = require("./routes/sauces");
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 3,
+  message: "Too many request from this IP",
+});
+
 mongoose
-  .connect("mongodb+srv://Candipy:SsQHgzjFvxb4S9op@cluster0.md9ll.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(process.env.MONGODB_CONNECT, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
@@ -25,4 +35,6 @@ app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "images"))); // Authorise l'accès de amnière statique au dossier images
 app.use("/api/sauces", saucesRoutes);
 app.use("/api/auth", userRoutes);
+app.use(limiter);
+
 module.exports = app; // Permets d'utiliser les modules sur les autres fichiers
