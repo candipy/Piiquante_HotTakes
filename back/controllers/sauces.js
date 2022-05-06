@@ -20,9 +20,9 @@ exports.likesSauces = (req, res) => {
         )
           .then(() => res.status(201).json({ message: "Tu aimes cette sauce :) +1 !" }))
 
-          .catch((error) => res.status(401).json({ error }));
+          .catch((error) => res.status(500).json({ error }));
       } else if (sauce.usersLiked.includes(req.body.userId) && req.body.like === 0) {
-        // UserId de la requete est pas dans userLiked (il a déjà aimé) de la bdd et la req renvoi 0 like, il est neutre
+        // UserId de la requete est  dans userLiked (il a déjà aimé) de la bdd et la req renvoi 0 like, il est neutre
         Sauce.updateOne(
           //Chercher l'objet dans la bdd
           { _id: req.params.id },
@@ -31,7 +31,18 @@ exports.likesSauces = (req, res) => {
         )
           .then(() => res.status(201).json({ message: "Tu aimais cette sauce, tu ne donnes plus ton avis sur cette sauce" }))
 
-          .catch((error) => res.status(401).json({ error }));
+          .catch((error) => res.status(500).json({ error }));
+      } else if (sauce.usersLiked.includes(req.body.userId) && req.body.like === -1) {
+        // UserId de la requete est  dans userLiked (il a déjà aimé) de la bdd et la req renvoi -1 like, il est aimait, il n'aime plus
+        Sauce.updateOne(
+          //Chercher l'objet dans la bdd
+          { _id: req.params.id },
+          // Mettre à jour la bdd
+          { $inc: { likes: -1, dislikes: 1 }, $pull: { usersLiked: req.body.userId }, $push: { usersDisliked: req.body.userId } }
+        )
+          .then(() => res.status(201).json({ message: "Tu aimais cette sauce, tu ne l'aime plus" }))
+
+          .catch((error) => res.status(500).json({ error }));
       } else if (!sauce.usersDisliked.includes(req.body.userId) && req.body.like === -1) {
         // UserId de la requete n'est pas dans userDisliked  de la bdd et la req renvoi -1 , il n'aime pas
         Sauce.updateOne(
@@ -42,9 +53,9 @@ exports.likesSauces = (req, res) => {
         )
           .then(() => res.status(201).json({ message: "Tu n'aimes pas cette sauce :(" }))
 
-          .catch((error) => res.status(401).json({ error }));
+          .catch((error) => res.status(500).json({ error }));
       } else if (sauce.usersDisliked.includes(req.body.userId) && req.body.like === 0) {
-        // UserId de la requete est dans userDisliked (il a déjà pas aimé) de la bdd et la req renvoi 0 dislike, il est neutre
+        // UserId de la requete est dans userDisliked (il a déjà dislike) de la bdd et la req renvoi 0 dislike, il est neutre
         Sauce.updateOne(
           //Chercher l'objet dans la bdd
           { _id: req.params.id },
@@ -53,7 +64,18 @@ exports.likesSauces = (req, res) => {
         )
           .then(() => res.status(201).json({ message: "Tu n'aimais pas cette sauce, tu ne donnes plus ton avis sur cette sauce" }))
 
-          .catch((error) => res.status(401).json({ error }));
+          .catch((error) => res.status(500).json({ error }));
+      } else if (sauce.usersDisliked.includes(req.body.userId) && req.body.like === 1) {
+        // UserId de la requete est dans userDisliked (il a déjà dislike) de la bdd et la req renvoi 1 like, il n'aimait pas, mnt il aime
+        Sauce.updateOne(
+          //Chercher l'objet dans la bdd
+          { _id: req.params.id },
+          // Mettre à jour la bdd
+          { $inc: { dislikes: -1, likes: 1 }, $pull: { usersDisliked: req.body.userId }, $push: { usersLiked: req.body.userId } }
+        )
+          .then(() => res.status(201).json({ message: "Tu n'aimais pas cette sauce, tu ne donnes plus ton avis sur cette sauce" }))
+
+          .catch((error) => res.status(500).json({ error }));
       }
     })
     .catch((error) => res.status(404).json({ error }));

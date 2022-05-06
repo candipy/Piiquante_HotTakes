@@ -4,13 +4,13 @@ const passwordSchema = new passwordValidator();
 
 passwordSchema
   .is()
-  .min(8) // Minimum length 8
+  .min(8, "minimumn 8 ") // Minimum length 8
   .is()
-  .max(20) // Maximum length 100
+  .max(20, "max 20") // Maximum length 20
   .has()
-  .uppercase() // Must have uppercase letters
+  .uppercase("1", "Majus") // Must have uppercase letters
   .has()
-  .lowercase() // Must have lowercase letters
+  .lowercase("1", "mini") // Must have lowercase letters
   .has()
   .not()
   .spaces() // Should not have spaces
@@ -22,10 +22,10 @@ passwordSchema
 
 module.exports = (req, res, next) => {
   const password = req.body.password;
-  //   console.log(passwordSchema.validate(req.body.password));
+  console.log(passwordSchema.validate(password));
   if (passwordSchema.validate(password)) {
     return next();
   } else {
-    return res.status(400).json({ error: passwordSchema.validate("password", { details: true }) });
+    return res.status(400).json({ error: passwordSchema.validate(password, { details: true }) });
   }
 };
