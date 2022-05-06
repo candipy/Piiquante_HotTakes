@@ -14,7 +14,7 @@ const saucesRoutes = require("./routes/sauces");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 3,
+  max: 100,
   message: "Too many request from this IP",
 });
 

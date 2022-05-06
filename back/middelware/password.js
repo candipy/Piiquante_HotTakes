@@ -21,10 +21,11 @@ passwordSchema
 // Vérification de la qualité du password par rapport au schéma
 
 module.exports = (req, res, next) => {
-  console.log(passwordSchema.validate(req.body.password));
-  if (passwordSchema.validate(req.body.password)) {
+  const password = req.body.password;
+  //   console.log(passwordSchema.validate(req.body.password));
+  if (passwordSchema.validate(password)) {
     return next();
   } else {
-    return res.status(400).json({ error: passwordSchema.validate("req.body.password", { details: true }) });
+    return res.status(400).json({ error: passwordSchema.validate("password", { details: true }) });
   }
 };
