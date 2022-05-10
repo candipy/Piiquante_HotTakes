@@ -91,7 +91,7 @@ exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id }) // Cherche l'objet dans la bdd
     .then((sauce) => {
       if (!sauce) {
-        return res.status(404).json({ error: new error("Objet non trouvé") });
+        return res.status(404).json({ error: new Error("Objet non trouvé") });
       }
       if (sauce.userId !== req.auth.userId) {
         console.log("userID sauce", sauce.userId);
