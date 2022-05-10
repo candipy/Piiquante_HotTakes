@@ -22,9 +22,10 @@ passwordSchema
 
 module.exports = (req, res, next) => {
   const password = req.body.password;
+
   if (passwordSchema.validate(password)) {
     return next();
   } else {
-    return res.status(400).json({ error: passwordSchema.validate(password, { details: true }) });
+    return res.status(400).json({ error: passwordSchema.validate(password, { list: true }) });
   }
 };
