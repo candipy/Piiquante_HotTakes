@@ -6,6 +6,6 @@ module.exports = (req, res, next) => {
   if (validator.validate(email)) {
     next();
   } else {
-    return res.status(400).json({ error: `L'email ${email} n'est pas valide` });
+    return res.status(400).json({ message: `L'email ${email} n'est pas valide` });
   }
 };
