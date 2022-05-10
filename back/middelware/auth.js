@@ -10,8 +10,8 @@ module.exports = (req, res, next) => {
     req.auth = { userId }; // Ajoute un objet auth à l'objet de requête qui contient le userId  extrait du token
 
     if (req.body.userId && req.body.userId !== userId) {
-      // Si l'ID saisi dans la demande est différente de celui extrait du token = erreur
-      res.status(403).json({ message: "Utilisateur non authorisé" });
+      // Si la requete contient un userId et qu'il est différent de l'userId contenu dans le token
+      res.status(403).json({ message: "Requete non authorisée" });
     } else {
       next(); // Sinon, requete suivant
     }

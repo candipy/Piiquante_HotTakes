@@ -2,8 +2,6 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt"); // package de chiffrement
 const jwt = require("jsonwebtoken");
 
-
-
 exports.signup = (req, res, next) => {
   bcrypt // fonction de hachage
     .hash(req.body.password, 10) // saler 10x, soit passe l'algorithme de hachage 10 fois
@@ -33,6 +31,7 @@ exports.login = (req, res, next) => {
           if (!valid) {
             return res.status(401).json({ error: "Mot de passe incorrect !" });
           }
+
           res.status(200).json({
             userId: user._id,
             // Création d'un token d'identification encodé (sign) qui contient l'id de l'utilisateur, puis une chaine secrete temporaire, valable 24h
