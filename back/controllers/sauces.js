@@ -1,8 +1,6 @@
 const Sauce = require("../models/sauces");
 
 const fs = require("fs"); // package permettant de modifier le système de fichiers
-const sauces = require("../models/sauces");
-const { parse } = require("path");
 
 // Gestion des Likes/Dislikes
 
@@ -171,7 +169,7 @@ exports.createSauce = (req, res, next) => {
     ...sauceObject, // Spread = copie de tous les éléments de req.body
     userId: req.auth.userId,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`, // Résoudre URL de l'image : req.protocol = http/https, req.get('host') = URL du lien, req.filename = nom du fichier
-    likes: 0, // Initilisation des données
+    likes: 0, // Initialisation des données
     dislikes: 0,
     usersLiked: [""],
     usersDisliked: [""],

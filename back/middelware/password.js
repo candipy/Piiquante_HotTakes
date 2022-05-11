@@ -4,7 +4,7 @@ const passwordSchema = new passwordValidator();
 
 passwordSchema
   .is()
-  .min(8, "minimumn 8 ") // Minimum length 8
+  .min(8, "minimum 8 ") // Minimum length 8
   .is()
   .max(20, "max 20") // Maximum length 20
   .has()

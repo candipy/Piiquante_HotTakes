@@ -1,4 +1,4 @@
-// Permet de protéger les routes par l'authentificarion de l'utilisateur
+// Permet de protéger les routes par l'authentification de l'utilisateur
 
 const jwt = require("jsonwebtoken");
 

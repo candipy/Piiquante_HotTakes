@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
-app.use("/images", express.static(path.join(__dirname, "images"))); // Authorise l'accès de amnière statique au dossier images
+app.use("/images", express.static(path.join(__dirname, "images"))); // Authorise l'accès de manière statique au dossier images
 app.use("/api/sauces", saucesRoutes);
 app.use("/api/auth", userRoutes);
 app.use(limiter);
