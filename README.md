@@ -1,8 +1,8 @@
+<img src="HotTakes.png" alt="Hot_takes_presentation"/>
+
 # piiquante_martinez_julie
 
-
 Projet 6 du parcours Openclassrooms Developpeur Web : Construisez une API sécurisée pour une application d'avis gastronomiques
-
 
 BACKEND
 
