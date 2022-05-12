@@ -35,7 +35,7 @@ exports.login = (req, res, next) => {
           res.status(200).json({
             userId: user._id,
             // Création d'un token d'identification encodé (sign) qui contient l'id de l'utilisateur, puis une chaine secrete temporaire, valable 24h
-            token: jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, { expiresIn: "24h" }),
+            token: jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, { expiresIn: "1h" }),
           });
         })
         .catch((error) => res.status(500).json({ error }));
